@@ -19,6 +19,9 @@
   "flags": {
     "canUpload": true
   },
+  "esmodules": [
+    "scripts/main.js"
+  ],
   "relationships": {
     "systems": [
       {
