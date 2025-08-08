@@ -66,13 +66,13 @@ export default class GalhoSecoUsersConfig extends FormApplication {
         });
     }
 
-        async _updateObject(event, formData) {
-            event.preventDefault(); // previne comportamento padrão
+    async _updateObject(event, formData) {
+        event.preventDefault(); // previne comportamento padrão
 
-            const users = [];
-            const pattern = /^users\[(\d+)\]\[(userId|apiKey)\]$/;
+        const users = [];
+        const pattern = /^users\[(\d+)\]\[(userId|apiKey)\]$/;
 
-            for (const [key, value] of Object.entries(formData)) {
+        for (const [key, value] of Object.entries(formData)) {
             const match = key.match(pattern);
             if (!match) continue;
 
@@ -81,9 +81,12 @@ export default class GalhoSecoUsersConfig extends FormApplication {
 
             if (!users[index]) users[index] = {};
             users[index][field] = value;
-            }
-
-            await game.settings.set("galho-seco-integration", "users", users);
-            ui.notifications.info("Configurações salvas com sucesso.");
         }
+
+        const validUsers = users.filter(
+            (u) => u.userId && u.apiKey
+        );
+        await game.settings.set("galho-seco-integration", "users", validUsers);
+        ui.notifications.info("Configurações salvas com sucesso.");
+    }
 }
