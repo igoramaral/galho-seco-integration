@@ -20,7 +20,21 @@
     "canUpload": true
   },
   "esmodules": [
-    "scripts/main.js"
+    "scripts/main.js",
+    "forms/GalhoSecoUsersConfig.js"
+  ],
+  "templates": [
+    "templates/forms/galho-seco-users-config.html"
+  ],
+  "settings": [
+    {
+      "key": "users",
+      "name": "Usuários e API Keys",
+      "scope": "world",
+      "config": false,
+      "type": "object",
+      "default": []
+    }
   ],
   "relationships": {
     "systems": [
