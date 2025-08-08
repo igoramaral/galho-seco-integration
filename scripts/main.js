@@ -1,5 +1,4 @@
 const API_EXPORT_ENDPOINT = "/foundry/characters";
-const API_ITEM_ENDPOINT = '/foundry/item';
 const API_URL = "http://localhost:3000/api/v1"; // Substitua pela URL real da sua API
 
 async function sendCharactersToApi() {
@@ -26,7 +25,15 @@ async function sendCharactersToApi() {
 
     const payload = {
         username,
-        characters: characters?.map(actor => actor.toObject()),
+        characters: characters.map(actor => ({
+            id: actor.id,
+            name: actor.name,
+            type: actor.type,
+            img: actor.img,
+            system: actor.system, // inclui atributos resolvidos
+            items: actor.items.map(item => item.toObject()),
+            effects: actor.effects.map(effect => effect.toObject())
+        }))
     };
 
     try {
@@ -59,7 +66,15 @@ async function sendSingleCharacterToApi(actor) {
 
     const payload = {
         username,
-        characters: [actor.toObject()],
+        characters: [{
+            id: actor.id,
+            name: actor.name,
+            type: actor.type,
+            img: actor.img,
+            system: actor.getRollData(), // inclui atributos resolvidos
+            items: actor.items.map(item => item.toObject()),
+            effects: actor.effects.map(effect => effect.toObject())
+        }],
     };
 
     try {
@@ -109,32 +124,6 @@ async function sendDeleteCharacterToApi(actor) {
         console.log("[Galho Seco Integration] Personagem deletado com sucesso:", actor.name);
     } catch (err) {
         console.error("[Galho Seco Integration] Falha ao deletar personagem:", actor.name, err);
-    }
-}
-
-async function sendItemToApi(item, removal=false) {
-    const actor = item.parent;
-    const apiKey = game.settings.get("galho-seco-integration", "apiKey");
-
-    const payload = {
-        characterId: actor.id,
-        item: item.toObject(),
-    };
-
-    try {
-        const response = await fetch(`${API_URL}${API_ITEM_ENDPOINT}`, {
-            method: removal ? "DELETE" : "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-        console.log(`[Galho Seco Integration] Resposta da API:`, result);
-    } catch (err) {
-        console.error(`[Galho Seco Integration] Erro ao enviar item:`, err);
     }
 }
 
@@ -232,7 +221,7 @@ Hooks.once("ready", () => {
 
         if (await isCharacterSynced(actor)) {
             console.log("[Galho Seco Integration] Item criado no personagem ", actor.name, ", que pertence ao usuário:", username);
-            sendItemToApi(item);
+            sendSingleCharacterToApi(actor);
         } else {
             console.log("[Galho Seco Integration] Item criado, mas não pertence ao usuário:", username);
         }
@@ -246,7 +235,7 @@ Hooks.once("ready", () => {
 
         if (await isCharacterSynced(actor)) {
             console.log("[Galho Seco Integration] Item atualizado no personagem ", actor.name, ", que pertence ao usuário:", username);
-            sendItemToApi(item);
+            sendSingleCharacterToApi(actor);
         } else {
             console.log("[Galho Seco Integration] Item atualizado, mas não pertence ao usuário:", username);
         }
@@ -260,7 +249,7 @@ Hooks.once("ready", () => {
 
         if (await isCharacterSynced(actor)) {
             console.log("[Galho Seco Integration] Item excluído no personagem ", actor.name, ", que pertence ao usuário:", username);
-            sendItemToApi(item, true);
+            sendSingleCharacterToApi(actor);
         } else {
             console.log("[Galho Seco Integration] Item excluído, mas não pertence ao usuário:", username);
         }
