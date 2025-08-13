@@ -27,8 +27,6 @@ export async function sendCharactersToApi() {
                 actor.ownership?.[userId] === 3
         );
 
-        
-
         const payload = {
             userId,
             characters: characters.map(actor => {
@@ -102,7 +100,7 @@ export async function sendSingleCharacterToApi(actor) {
                 name: actor.name,
                 type: actor.type,
                 img: actor.img,
-                system: data, // inclui atributos resolvidos
+                system: data,
                 items: actor.items.map(item => item.toObject()),
                 effects: actor.effects.map(effect => effect.toObject())
             }],

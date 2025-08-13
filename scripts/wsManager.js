@@ -53,6 +53,14 @@ export default function connectWebSocket() {
                     result = await processRequests.processInitiativeRoll(data);
                 }
 
+                if (data.type === "roll-HitDice") {
+                    result = await processRequests.processHitDiceRoll(data);
+                }
+
+                if (data.type === "roll-Attack" || data.type === "roll-Damage") {
+                    result = await processRequests.processWeaponAttackDamage(data);
+                }
+
                 socket.send(JSON.stringify({
                     requestId: data.requestId,
                     payload: result
@@ -67,6 +75,19 @@ export default function connectWebSocket() {
                 // Trata updates de item feitos no app
                 if (data.type === "itemUpdated") {
                     await processRequests.processItemUpdated(data);
+                }
+
+                // Trata aplicação de dano feita no app
+                if (data.type === "apply-damage") {
+                    await processRequests.processApplyDamage(data);
+                }
+
+                if (data.type === "apply-heal-tempHp") {
+                    await processRequests.processApplyHealTempHp(data);
+                }
+
+                if (data.type === 'shortRest' || data.type === 'longRest'){
+                    await processRequests.processRest(data);
                 }
             }    
         });

@@ -92,6 +92,9 @@ class ProcessRequests {
             case "habilidade":
                 rollResult = await actor.rollSkill({ skill: rollSubject, ...(advantage || {})}, config, create);
                 break;
+            case "deathSave":
+                rollResult = await actor.rollDeathSave({...(advantage || {})}, config, create)
+                break;
         }
 
         await waitForDiceSoNiceAnimation();
@@ -152,6 +155,122 @@ class ProcessRequests {
         }
 
         return rollInitiativeWithCombatIntegration(actor, advantage)
+    }
+
+    async processApplyDamage(data){
+        console.log("[Galho Seco Integration] Aplicação de dano recebida via WebSocket!");
+        console.log(data);
+
+        const charId = data.charId;
+        const damage = Number(data.damage);
+
+        const actor = game.actors.get(charId);
+        if (!actor){
+            console.log("[Galho Seco Integration] Personagem não encontrado! Aplicação não executada")
+            return;
+        }
+
+        await actor.applyDamage(damage);
+    }
+    
+    async processApplyHealTempHp(data){
+        console.log("[Galho Seco Integration] Aplicação de Cura e/ou HP temporário recebida via WebSocket!");
+
+        const charId = data.charId;
+        const heal = Number(data.healData.heal);
+        const tempHp = Number(data.healData.tempHp);
+
+        const actor = game.actors.get(charId);
+        if (!actor){
+            console.log("[Galho Seco Integration] Personagem não encontrado! Aplicação não executada")
+            return;
+        }
+
+        if (heal) await actor.applyDamage(-heal);
+        if (tempHp) await actor.applyTempHP(tempHp);
+    }
+    
+    async processHitDiceRoll(data){
+        console.log("[Galho Seco Integration] Rolagem de Dado de Vida recebida via WebSocket!");
+
+        const charId = data.charId;
+        const config = data.config;
+        const dialog = { configure: false }
+        const create = { create: true }
+
+        const actor = game.actors.get(charId);
+        if (!actor){
+            console.log("[Galho Seco Integration] Personagem não encontrado! Rolagem não executada")
+            return;
+        }
+
+        const rollResult = await actor.rollHitDie(config, dialog, create);
+
+        await waitForDiceSoNiceAnimation();
+
+        return rollResult[0];
+    }
+
+    async processRest(data){
+        console.log("[Galho Seco Integration] Descanso recebido via WebSocket!");
+
+        const charId = data.charId;
+        const config = data.config;
+
+        const actor = game.actors.get(charId);
+        if (!actor){
+            console.log("[Galho Seco Integration] Personagem não encontrado! Descanso não executado")
+            return;
+        }
+
+        if (data.type === 'shortRest'){
+            console.log("[Galho Seco Integration] Executando Short Rest");
+            await actor.shortRest(config);
+        } else {
+            console.log("[Galho Seco Integration] Executando Long Rest");
+            delete data.autoHD;
+            await actor.longRest(config);
+        }
+    }
+
+    async processWeaponAttackDamage(data){
+        console.log(`[Galho Seco Integration] Rolagem de ${data.type === "roll-Attack" ? "Ataque" : "Dano"} recebida via WebSocket!`);
+
+        const charId = data.charId;
+        const itemId = data.itemId;
+        const config = data.config;
+        const dialog = { configure: false }
+        const create = { create: true }
+
+        const actor = game.actors.get(charId);
+        if (!actor){
+            console.log("[Galho Seco Integration] Personagem não encontrado! Rolagem não executada")
+            return;
+        }
+        const item = actor.items.get(itemId);
+        if (!item){
+            console.log("[Galho Seco Integration] Item não encontrado! Rolagem não executada")
+            return;
+        }
+
+        const activities = item.system.activities.filter(a => a.type === "attack");
+        if (activities.length > 0){
+            const activity = activities[0];
+            let rollResult;
+            
+            if(data.type === 'roll-Attack'){
+                rollResult = await activity.rollAttack(config, dialog, create);
+            } else {
+                rollResult = await activity.rollDamage(config, dialog, create);
+            }
+
+            await waitForDiceSoNiceAnimation();
+
+            return rollResult[0];
+        } else {
+            console.log("[Galho Seco Integration] Item não possui atividade de ataque. Rolagem não executada")
+            return;
+        }
     }
 }
 
