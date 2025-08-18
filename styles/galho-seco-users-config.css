@@ -1,0 +1,27 @@
+.galho-seco-form .user-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.galho-seco-form select,
+.galho-seco-form input[type="text"] {
+    flex: 1;
+    min-width: 350px;
+    padding: 4px 8px;
+    font-size: 1em;
+}
+
+.galho-seco-form select {
+    min-width: 150px;
+}
+
+.galho-seco-form button.clear-row,
+.galho-seco-form button.remove-row {
+    cursor: pointer;
+    background: transparent;
+    font-size: 1.2em;
+    padding: 2px 2px;
+    line-height: 1;
+}
