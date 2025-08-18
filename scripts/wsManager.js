@@ -1,7 +1,13 @@
 import processRequests from "./util/processRequests.js";
 
 export default function connectWebSocket() {
-    const socketUrl = "ws://localhost:3000";
+    const serverUrl = game.settings.get("galho-seco-integration", "serverUrl");
+    if (!serverUrl){
+        console.log("[Galho Seco Integration] URL do servidor não definida. Abortando conexão WebSocket.")
+        return;
+    }
+    const treatedUrl = serverUrl.replace(/^https?:\/\//, "");
+    const socketUrl = `ws://${treatedUrl}`;
     let socket = null;
     let reconnectAttempts = 0;
     const maxReconnectAttempts = 10;
@@ -21,7 +27,7 @@ export default function connectWebSocket() {
 
             if (apiKeys.length === 0) {
                 console.warn(
-                    "Nenhuma apiKey cadastrada no módulo. Fechando conexão WebSocket."
+                    "[Galho Seco Integration] Nenhuma apiKey cadastrada no módulo. Fechando conexão WebSocket."
                 );
                 socket.close(1000, "Nenhuma apiKey cadastrada");
                 return;

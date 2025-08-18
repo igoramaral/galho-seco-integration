@@ -1,7 +1,12 @@
-const API_EXPORT_ENDPOINT = "/foundry/characters";
-const API_URL = "http://localhost:3000/api/v1";
+const API_EXPORT_ENDPOINT = "/api/v1/foundry/characters";
 
 export async function sendCharactersToApi() {
+    const API_URL = game.settings.get("galho-seco-integration", "serverUrl");
+    if(!API_URL){
+        console.warn("[Galho Seco Integration] URL do servidor não configurada. Cancelando.");
+        return;
+    }
+
     const usersConfig = game.settings.get("galho-seco-integration", "users");
 
     if (!Array.isArray(usersConfig) || usersConfig.length === 0) {
@@ -70,6 +75,12 @@ export async function sendCharactersToApi() {
 }
 
 export async function sendSingleCharacterToApi(actor) {
+    const API_URL = game.settings.get("galho-seco-integration", "serverUrl");
+    if(!API_URL){
+        console.warn("[Galho Seco Integration] URL do servidor não configurada. Cancelando.");
+        return;
+    }
+
     const usersSetting = game.settings.get("galho-seco-integration", "users");
     if (!Array.isArray(usersSetting) || usersSetting.length === 0) return;
 
@@ -128,6 +139,12 @@ export async function sendSingleCharacterToApi(actor) {
 }
 
 export async function sendDeleteCharacterToApi(actor) {
+    const API_URL = game.settings.get("galho-seco-integration", "serverUrl");
+    if(!API_URL){
+        console.warn("[Galho Seco Integration] URL do servidor não configurada. Cancelando.");
+        return;
+    }
+
     const usersSetting = game.settings.get("galho-seco-integration", "users");
     if (!Array.isArray(usersSetting) || usersSetting.length === 0) return;
 
