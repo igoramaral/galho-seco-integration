@@ -1,0 +1,38 @@
+<form autocomplete="off">
+  <div id="user-rows">
+    {{#each storedUsers as |entry index|}}
+      <div class="user-row" data-index="{{index}}">
+        <select name="users[{{index}}][userId]">
+          {{#each ../availableUsers as |user|}}
+            <option value="{{user.id}}" {{#if (eq user.id entry.userId)}}selected{{/if}}>{{user.name}}</option>
+          {{/each}}
+        </select>
+        <input type="text" name="users[{{index}}][apiKey]" value="{{entry.apiKey}}" placeholder="API Key"/>
+        <button type="button" class="clear-row">🧹</button>
+        {{#if (gt index 0)}}
+          <button type="button" class="remove-row">❌</button>
+        {{/if}}
+      </div>
+    {{/each}}
+
+    {{#unless storedUsers.length}}
+      <div class="user-row" data-index="0">
+        <select name="users[0][userId]">
+          {{#each availableUsers as |user|}}
+            <option value="{{user.id}}">{{user.name}}</option>
+          {{/each}}
+        </select>
+        <input type="text" name="users[0][apiKey]" placeholder="API Key"/>
+        <button type="button" class="clear-row">🧹</button>
+      </div>
+    {{/unless}}
+  </div>
+
+  <div style="margin-top: 10px;">
+    <button type="button" id="add-row">➕ Adicionar Linha</button>
+  </div>
+
+  <footer class="sheet-footer flexrow">
+    <button type="submit"><i class="fas fa-save"></i> Salvar</button>
+  </footer>
+</form>
