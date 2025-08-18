@@ -61,6 +61,10 @@ export default function connectWebSocket() {
                     result = await processRequests.processWeaponAttackDamage(data);
                 }
 
+                if (data.type === 'cast-spell-attack' || data.type === 'cast-spell' || data.type === 'cast-spell-damage'){
+                    result = await processRequests.processSpellcasting(data);
+                }
+
                 socket.send(JSON.stringify({
                     requestId: data.requestId,
                     payload: result

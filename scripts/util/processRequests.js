@@ -272,6 +272,53 @@ class ProcessRequests {
             return;
         }
     }
+
+    async processSpellcasting(data){
+        const rollType = data.type === 'cast-spell-attack' ? "Ataque de Conjuração" : "Dano de conjuração"
+        console.log(`[Galho Seco Integration] Rolagem de ${rollType} recebida via WebSocket!`);
+
+        const charId = data.charId;
+        const itemId = data.itemId;
+        const activityid = data.activityId;
+        const atkConfig = data.atkConfig || {};
+        const config = data.config;
+        const dialog = { configure: false }
+        const create = { create: true }
+        console.log(config);
+
+        const actor = game.actors.get(charId);
+        if (!actor){
+            console.log("[Galho Seco Integration] Personagem não encontrado! Rolagem não executada")
+            return;
+        }
+
+        const item = actor.items.get(itemId);
+        if (!item){
+            console.log("[Galho Seco Integration] Item não encontrado! Rolagem não executada")
+            return;
+        }
+
+        const activity = item.system.activities.get(activityid);
+        if (!item){
+            console.log("[Galho Seco Integration] Activity não encontrada! Rolagem não executada")
+            return;
+        }
+
+        let result;
+        if (data.type === 'cast-spell-damage'){
+            result = await activity.rollDamage(config, dialog, create);
+        } else {
+            await activity.use(config, dialog, create);
+            if (data.type === 'cast-spell-attack'){
+                result = await activity.rollAttack(atkConfig, dialog, create);
+            } else {
+                result = await activity.rollDamage({scaling: config.scaling}, dialog, create);
+            }
+        }
+
+        if (result) await waitForDiceSoNiceAnimation();
+        return result ? result[0] : {};
+    }
 }
 
 export default new ProcessRequests()
