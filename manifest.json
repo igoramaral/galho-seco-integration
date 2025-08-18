@@ -1,0 +1,40 @@
+{
+  "id": "galho-seco-integration",
+  "title": "Galho Seco Integration",
+  "description": "Integrates Foundry VTT with Galho Seco, a D&D Character Sheet for Android Devices.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "Igor Amaral",
+      "url": "https://github.com/igoramaral",
+      "discord": "Igorshinomori"
+    }
+  ],
+  "url": "https://github.com/igoramaral/galho-seco-integration",
+  "manifest": "https://raw.githubusercontent.com/igoramaral/galho-seco-integration/main/manifest.json",
+  "download": "https://github.com/igoramaral/galho-seco-integration/releases/latest/download/galho-seco-integration.zip",
+  "readme": "https://github.com/igoramaral/galho-seco-integration/blob/main/README.md",
+  "changelog": "https://github.com/igoramaral/galho-seco-integration/releases",
+  "flags": {
+    "canUpload": true
+  },
+  "esmodules": [
+    "scripts/main.js",
+    "scripts/config/GalhoSecoUsersConfig.js",
+    "scripts/util/prepareCharacterData.js",
+    "scripts/util/syncUtil.js",
+    "scripts/util/processRequests.js"
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system"
+      }
+    ]
+  }
+}
