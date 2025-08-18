@@ -10,7 +10,7 @@ function scheduleSend(interval) {
 
 Hooks.once("init", () => {
 
-    console.log("Galho Seco Integration | Initializing Configs");
+    console.log("[Galho Seco Integration] Inicializando Configs");
 
     const cssPath = "modules/galho-seco-integration/styles/galho-seco-users-config.css";
     const link = document.createElement("link");
