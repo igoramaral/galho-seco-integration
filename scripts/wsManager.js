@@ -7,7 +7,7 @@ export default function connectWebSocket() {
         return;
     }
     const treatedUrl = serverUrl.replace(/^https?:\/\//, "");
-    const socketUrl = `ws://${treatedUrl}`;
+    const socketUrl = `wss://${treatedUrl}`;
     let socket = null;
     let reconnectAttempts = 0;
     const maxReconnectAttempts = 10;
